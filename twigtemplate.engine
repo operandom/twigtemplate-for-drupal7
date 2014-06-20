@@ -1,0 +1,49 @@
+<?php
+
+/**
+* @file
+* Handles integration of PHP templates with the Drupal theme system.
+*/
+
+require_once 'vendor/autoload.php';
+
+use libs\TwigProxy as Twig;
+
+/**
+* Implements hook_init().
+*/
+function twigtemplate_init($template) {
+	trace('twigtemplate_init');
+	
+	$file = dirname($template->filename) . '/template.php';
+	if (file_exists($file)) {
+		include_once DRUPAL_ROOT . '/' . $file;
+	}
+	
+	global $twigEngine;
+	$twigEngine = new Twig();
+}
+
+/**
+* Implements hook_theme().
+*/
+function twigtemplate_theme($existing, $type, $theme, $path) {
+	trace('twigtemplate_theme');
+	trace('path: ' . $path);
+
+	$templates = drupal_find_theme_functions($existing, array($theme));
+	$templates += drupal_find_theme_templates($existing, '.twig', $path);
+	return $templates;
+}
+
+
+function twigtemplate_render_template($template_file, $variables)
+{
+	global $twigEngine;
+	return $twigEngine->render($template_file, $variables);
+}
+
+function twigtemplate_extension()
+{
+	return '.twig';
+}
