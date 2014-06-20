@@ -14,7 +14,7 @@ class TwigProxy {
 			self::$loader = new \Twig_Loader_Filesystem(getcwd());
 		}
 		
-		if (!self::twig)
+		if (!self::$twig)
 		{
 			self::$twig = new \Twig_Environment(self::$loader, array(
 				//@TODO Add cache system
