@@ -41,7 +41,9 @@ class TwigProxy {
 			}));
 			
 			$twig->addFunction(new \Twig_SimpleFunction('theme', 'theme' ));
-		
+
+			$twig->addFilter(new \Twig_SimpleFilter('repeat', 'str_repeat' ));
+			
 			$twig->addFilter(new \Twig_SimpleFilter('hide', function () {
 				
 				$arguments = func_get_args();
