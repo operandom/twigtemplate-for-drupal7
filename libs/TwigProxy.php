@@ -30,7 +30,7 @@ class TwigProxy {
 			$twig = new \Twig_Environment(self::$loader, array(
 			
 				'autoescape' => false,
-				//@TODO Add cache system
+				//@TODO Add cache system in DB http://twig.sensiolabs.org/doc/recipes.html#using-a-database-to-store-templates
 				//'cache' => self::$cacheRoot,
 			));
 			
@@ -41,29 +41,31 @@ class TwigProxy {
 			}));
 			
 			$twig->addFunction(new \Twig_SimpleFunction('theme', 'theme' ));
-
+			
 			$twig->addFilter(new \Twig_SimpleFilter('repeat', 'str_repeat' ));
 			
 			$twig->addFilter(new \Twig_SimpleFilter('hide', function () {
 				
 				$arguments = func_get_args();
+				$env = array_shift($arguments);
+				$context = array_shift($arguments);
 				$element = array_shift($arguments);
-								
+				
 				foreach ($arguments as $key)
 				{
 					if (array_key_exists($key, $element))
 					{
-						unset($element[$key]);
+						$element[$key]['#printed'] = true;
 					}
 				}
 				
 				return $element;
-			}));
+			}, array('needs_context' => true, 'needs_environment' => true)));
 			
 			self::$twig = $twig;
 		}
 	}
-		
+	
 	public function render($view, $values)
 	{
 		return self::$twig->render($view, $values);
